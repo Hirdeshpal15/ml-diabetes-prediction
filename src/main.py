@@ -1,5 +1,7 @@
 from sklearn.model_selection import train_test_split
 import joblib
+import os
+os.makedirs("model", exist_ok=True)
 
 from preprocess import load_and_preprocess_data
 from model import get_model
