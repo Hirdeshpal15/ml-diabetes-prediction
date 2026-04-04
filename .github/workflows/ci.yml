@@ -21,8 +21,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Test project imports
+      # Train model (needed for test)
+      - name: Train model
         run: |
-          python -c "from src.preprocess import load_and_preprocess_data"
-          python -c "from src.model import get_model"
-          python -c "from src.evaluate import evaluate_model"
+          python src/main.py
+
+      # Run test
+      - name: Run tests
+        run: |
+          python -m pytest
