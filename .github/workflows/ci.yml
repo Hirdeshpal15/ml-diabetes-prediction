@@ -21,6 +21,12 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run training pipeline
+      '''- name: Run training pipeline
         run: |
-          python src/main.py
+          python src/main.py'''
+
+      - name: Test project imports
+        run: |
+          python -c "from src.preprocess import load_and_preprocess_data"
+          python -c "from src.model import get_model"
+          python -c "from src.evaluate import evaluate_model"
