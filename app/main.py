@@ -29,7 +29,7 @@ reference_columns = X.columns
 
 @app.get("/")
 def home():
-    return {"message": "Diabetes Prediction API is running"}
+    return {"message": "CI/CD Updated API"}
 
 
 @app.post("/predict")
