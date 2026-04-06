@@ -1,13 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
+import logging
 
 from src.preprocess import load_and_preprocess_data, preprocess_input
+
+# -------------------------------
+# Logging setup
+# -------------------------------
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
 
-# Define input schema
+# -------------------------------
+# Input Schema
+# -------------------------------
 class InputData(BaseModel):
     gender: str
     age: float
@@ -19,39 +28,67 @@ class InputData(BaseModel):
     blood_glucose_level: int
 
 
-# Load model
-model = joblib.load("model/model.joblib")
+# -------------------------------
+# Load model safely
+# -------------------------------
+try:
+    model = joblib.load("model/model.joblib")
+    logger.info("Model loaded successfully")
+except Exception as e:
+    logger.error(f"Error loading model: {e}")
+    model = None
 
-# Reference columns
-X, _ = load_and_preprocess_data()
-reference_columns = X.columns
+
+# -------------------------------
+# Load reference columns
+# -------------------------------
+try:
+    X, _ = load_and_preprocess_data()
+    reference_columns = X.columns
+    logger.info("Reference data loaded")
+except Exception as e:
+    logger.error(f"Error loading reference data: {e}")
+    reference_columns = None
 
 
+# -------------------------------
+# Routes
+# -------------------------------
 @app.get("/")
 def home():
-    return {"message": "CI/CD Updated API"}
+    return {"message": "CI/CD Updated API 🚀"}
 
 
 @app.post("/predict")
 def predict(data: InputData):
-    """
-    What it does:
-    Takes validated input and returns prediction
+    try:
+        logger.info(f"Received input: {data}")
 
-    Why:
-    Prevents bad input from breaking system
-    """
+        if model is None:
+            raise HTTPException(status_code=500, detail="Model not loaded")
 
-    # Convert to dict
-    input_dict = data.dict()
+        if reference_columns is None:
+            raise HTTPException(status_code=500, detail="Reference data not loaded")
 
-    # Preprocess
-    processed_input = preprocess_input(input_dict, reference_columns)
+        # Convert input
+        input_dict = data.dict()
 
-    # Predict
-    prediction = model.predict(processed_input)
+        # Preprocess
+        processed_input = preprocess_input(input_dict, reference_columns)
 
-    return {
-        "prediction": int(prediction[0]),
-        "diabetes": "YES" if prediction[0] == 1 else "NO"
-    }
+        # Predict
+        prediction = model.predict(processed_input)[0]
+
+        logger.info(f"Prediction result: {prediction}")
+
+        return {
+            "prediction": int(prediction),
+            "diabetes": "YES" if prediction == 1 else "NO"
+        }
+
+    except HTTPException as e:
+        raise e
+
+    except Exception as e:
+        logger.error(f"Prediction error: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
