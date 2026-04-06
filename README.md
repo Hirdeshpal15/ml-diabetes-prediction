@@ -12,7 +12,7 @@ It includes:
 - CI/CD pipeline using GitHub Actions
 - Docker for containerization
 
----
+---git
 
 ## 🌐 Live Demo
 
@@ -53,7 +53,7 @@ User → Streamlit UI → FastAPI (Azure) → ML Model
 
 ```bash
 # Clone repo
-git clone <your-repo-url>
+git clone https://github.com/Hirdeshpal15/ml-diabetes-prediction.git
 
 # Install dependencies
 pip install -r requirements.txt
