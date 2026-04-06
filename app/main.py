@@ -62,7 +62,7 @@ def home():
 @app.post("/predict")
 def predict(data: InputData):
     try:
-        logger.info(f"Received input: {data}")
+        logger.info(f"Received input: {data.dict()}")
 
         if model is None:
             raise HTTPException(status_code=500, detail="Model not loaded")
