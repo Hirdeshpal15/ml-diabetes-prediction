@@ -94,6 +94,8 @@ docker run -p 8000:8000 ml-api
 - Monitoring dashboards
 - UI improvements
 
+- <img width="1368" height="808" alt="Screenshot 2026-04-06 at 5 28 22 PM" src="https://github.com/user-attachments/assets/0fbe67eb-710f-4e62-ac11-51a94faeaec9" />
+
 ---
 
 ## 👨‍💻 Author
